@@ -42,6 +42,8 @@ jobs:
   # 'build-and-deploy' 작업: 코드를 빌드하고 GitHub Pages에 배포합니다.
   build-and-deploy:
     name: 빌드 및 배포
+    env:
+      DEPLOY_TARGET: gh-pages
     needs: changes
     # 실행 조건:
     # 1. [no-deploy] 태그가 없을 것
@@ -108,8 +110,6 @@ jobs:
       # plolux 빌드 및 복사
       # -------------------------------------------------------------
       - name: plolux 패키지 빌드
-        env:
-          DEPLOY_TARGET: gh-pages
         run: |
           echo "🚀 Building plolux..."
           pnpm --filter plolux build
