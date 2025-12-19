@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  env: {
+    NEXT_PUBLIC_BASE_PATH: isGithubPages ? "/forjex/plolux" : "",
+  },
 };
 
 export default nextConfig;

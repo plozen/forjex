@@ -1,17 +1,14 @@
 import Image from "next/image";
-import NextLogo from "../assets/next.svg";
-import VercelLogo from "../assets/vercel.svg";
-import File from "public/file.svg";
-import Globe from "public/globe.svg";
-import Window from "public/window.svg";
 
 export default function Home() {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
         <Image
           className="dark:invert"
-          src={NextLogo}
+          src={`${basePath}/next.svg`}
           alt="Next.js logo"
           width={100}
           height={20}
@@ -19,26 +16,10 @@ export default function Home() {
         />
         <Image
           className="dark:invert"
-          src={File}
-          alt="File"
-          width={100}
-          height={20}
-          priority
-        />
-        <Image
-          className="dark:invert"
-          src={Globe}
-          alt="Globe"
-          width={100}
-          height={20}
-          priority
-        />
-        <Image
-          className="dark:invert"
-          src={Window}
-          alt="Window"
-          width={100}
-          height={20}
+          src={`${basePath}/vercel.svg`}
+          alt="Vercel logomark"
+          width={16}
+          height={16}
           priority
         />
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
@@ -72,7 +53,7 @@ export default function Home() {
           >
             <Image
               className="dark:invert"
-              src={VercelLogo}
+              src={`${basePath}/vercel.svg`}
               alt="Vercel logomark"
               width={16}
               height={16}
