@@ -117,16 +117,16 @@ jobs:
 
       - name: plolux 빌드 결과물을 'staging'으로 복사
         run: |
-          # basePath(/forjex/plolux)와 일치하는 디렉토리 구조 생성
-          mkdir -p staging/forjex/plolux
+          # plolux 디렉토리 생성 (URL: /forjex/plolux -> Repo:forjex + Dir:plolux)
+          mkdir -p staging/plolux
 
           # GitHub Pages에서 _next 폴더 인식을 위해 .nojekyll 파일 생성
           touch staging/.nojekyll
 
           # Next.js output: export 모드일 경우 'out' 폴더가 생성됨
           # 주의: next.config.ts에서 output: 'export' 설정 필요
-          cp -r packages/plolux/out/* staging/forjex/plolux/ || echo "⚠️ 'out' directory not found. Did you set output: 'export' in next.config.ts?"
-          echo "📦 plolux copied to staging/forjex/plolux."
+          cp -r packages/plolux/out/* staging/plolux/ || echo "⚠️ 'out' directory not found. Did you set output: 'export' in next.config.ts?"
+          echo "📦 plolux copied to staging/plolux."
 
       # -------------------------------------------------------------
       # GitHub Pages 업로드 및 배포
