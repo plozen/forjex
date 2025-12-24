@@ -125,7 +125,7 @@ jobs:
 
           # Next.js output: export 모드일 경우 'out' 폴더가 생성됨
           # 주의: next.config.ts에서 output: 'export' 설정 필요
-          cp -r packages/plolux/out/* staging/plolux/ || echo "⚠️ 'out' directory not found. Did you set output: 'export' in next.config.ts?"
+          cp -r packages/plolux/out/* staging/plolux/ || { echo "❌ 'out' directory not found. Did you set output: 'export' in next.config.ts?"; exit 1; }
           echo "📦 plolux copied to staging/plolux."
 
       # -------------------------------------------------------------
@@ -135,6 +135,8 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'staging'
+          name: github-pages
+          retention-days: 1
 
       - name: GitHub Pages에 배포
         id: deployment
