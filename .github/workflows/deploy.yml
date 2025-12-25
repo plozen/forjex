@@ -163,4 +163,5 @@ jobs:
           destination-repository-name: 'plolux-web'
           user-email: 'devops@plolux.com'
           target-branch: 'main'
+          create-target-branch-if-needed: true
           commit-message: 'Ship: Plolux Engine Update (ORIGIN_COMMIT)'
