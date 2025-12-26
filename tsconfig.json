@@ -1,4 +1,4 @@
 {
   "files": [],
-  "references": [{ "path": "./packages/forgeline-app" }, { "path": "./packages/forgeline-brief" }]
+  "references": [{ "path": "./packages/plozen" }, { "path": "./packages/plolux" }]
 }

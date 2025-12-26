@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-# 워크플로 이름: Plolux 통합 배포
-name: Plolux 통합 배포
+# 워크플로 이름: PLOZEN 통합 배포
+name: PLOZEN 통합 배포
 
 # 트리거 설정: main 브랜치에 push 이벤트가 발생했을 때 워크플로를 실행합니다.
 on:
@@ -26,6 +26,7 @@ jobs:
     name: 변경 사항 감지
     runs-on: ubuntu-latest
     outputs:
+      plozen: ${{ steps.filter.outputs.plozen }}
       plolux: ${{ steps.filter.outputs.plolux }}
     steps:
       - name: 저장소 코드 체크아웃
@@ -36,6 +37,8 @@ jobs:
         id: filter
         with:
           filters: |
+            plozen:
+              - 'packages/plozen/**'
             plolux:
               - 'packages/plolux/**'
 
@@ -47,10 +50,10 @@ jobs:
     needs: changes
     # 실행 조건:
     # 1. [no-deploy] 태그가 없을 것
-    # 2. plolux 패키지가 변경되었거나, [deploy:plolux] 또는 [deploy:all] 태그가 있을 때
+    # 2. plozen 패키지가 변경되었거나, [deploy:plozen] 또는 [deploy:all] 태그가 있을 때
     if: |
       !contains(github.event.head_commit.message, '[no-deploy]') &&
-      (needs.changes.outputs.plolux == 'true' || contains(github.event.head_commit.message, '[deploy:plolux]') || contains(github.event.head_commit.message, '[deploy:all]'))
+      (needs.changes.outputs.plozen == 'true' || needs.changes.outputs.plolux == 'true' || contains(github.event.head_commit.message, '[deploy:plozen]') ||  contains(github.event.head_commit.message, '[deploy:plolux]') || contains(github.event.head_commit.message, '[deploy:all]'))
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -107,16 +110,24 @@ jobs:
         run: cp index.html staging/
 
       # -------------------------------------------------------------
-      # plolux 빌드 및 복사
+      # plozen 빌드 및 복사
       # -------------------------------------------------------------
+      - name: plozen 패키지 빌드
+        run: |
+          echo "🚀 Building plozen..."
+          pnpm --filter plozen build
+          echo "✅ plozen build complete."
+
       - name: plolux 패키지 빌드
         run: |
           echo "🚀 Building plolux..."
           pnpm --filter plolux build
           echo "✅ plolux build complete."
 
-      - name: plolux 빌드 결과물을 'staging'으로 복사
+      - name: plozen 빌드 결과물을 'staging'으로 복사
         run: |
+          # plozen 디렉토리 생성 (URL: /forjex/plozen -> Repo:forjex + Dir:plozen)
+          mkdir -p staging/plozen
           # plolux 디렉토리 생성 (URL: /forjex/plolux -> Repo:forjex + Dir:plolux)
           mkdir -p staging/plolux
 
@@ -125,7 +136,14 @@ jobs:
 
           # Next.js output: export 모드일 경우 'out' 폴더가 생성됨
           # 주의: next.config.ts에서 output: 'export' 설정 필요
-          cp -r packages/plolux/out/* staging/plolux/ || { echo "❌ 'out' directory not found. Did you set output: 'export' in next.config.ts?"; exit 1; }
+          cp -r packages/plozen/out/* staging/plozen/ || { echo "❌ 'out' directory not found. Did you set output: 'export' in next.config.ts?"; exit 1; }
+          echo "📦 plozen copied to staging/plozen."
+
+      - name: plolux 빌드 결과물을 'staging'으로 복사
+        run: |
+          # Next.js output: export 모드일 경우 'out' 폴더가 생성됨
+          # 주의: next.config.ts에서 output: 'export' 설정 필요
+          cp -r packages/plolux/out/* staging/plolux/ || { echo "❌ 'plolux out' directory not found."; exit 1; }
           echo "📦 plolux copied to staging/plolux."
 
       # -------------------------------------------------------------
@@ -143,6 +161,29 @@ jobs:
           artifact_name: github-pages
 
   # [New] Sync specific package to independent repository for Delivery
+  sync-to-plozen-web:
+    runs-on: ubuntu-latest
+    needs: [] # Run in parallel with documentation deploy
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync App to Plozen Repo
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.PLOZEN_SYNC_TOKEN }}
+        with:
+          source-directory: 'packages/plozen'
+          destination-github-username: 'plozen'
+          destination-repository-name: 'plozen-web'
+          user-email: 'devops@plozen.com'
+          target-branch: 'main'
+          create-target-branch-if-needed: true
+          commit-message: 'Ship: Plozen Engine Update (ORIGIN_COMMIT)'
+
   sync-to-plolux-web:
     runs-on: ubuntu-latest
     needs: [] # Run in parallel with documentation deploy

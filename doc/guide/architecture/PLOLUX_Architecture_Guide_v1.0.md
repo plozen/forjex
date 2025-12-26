@@ -1,14 +1,14 @@
-# PLOLUX 아키텍처 가이드 (PLOLUX Architecture Guide)
+# PLOZEN 아키텍처 가이드 (PLOZEN Architecture Guide)
 
 > **Document Version**: v1.0
 > **Last Updated**: 2025-12-19
-> **Description**: PLOLUX 프로젝트의 아키텍처 철학, 디렉토리 구조, 그리고 각 레이어의 역할을 정의한 최종 가이드입니다.
+> **Description**: PLOZEN 프로젝트의 아키텍처 철학, 디렉토리 구조, 그리고 각 레이어의 역할을 정의한 최종 가이드입니다.
 
 ---
 
 ## 1. 아키텍처 개요 (Architectural Overview)
 
-PLOLUX는 **Feature-Sliced Design (FSD)**의 모듈성과 **Atomic Design**의 재사용성을 결합하여, 확장 가능하고 유지보수가 용이한 구조를 지향합니다.
+PLOZEN는 **Feature-Sliced Design (FSD)**의 모듈성과 **Atomic Design**의 재사용성을 결합하여, 확장 가능하고 유지보수가 용이한 구조를 지향합니다.
 
 ### 핵심 철학
 
@@ -21,7 +21,7 @@ PLOLUX는 **Feature-Sliced Design (FSD)**의 모듈성과 **Atomic Design**의 �
 ## 2. 디렉토리 구조 (Directory Structure)
 
 ```plaintext
-packages/plolux/
+packages/plozen/
 ├── src/
 │   ├── app/                      # [Routing Layer] URL 라우팅 및 페이지 레이아웃 (Controller 역할)
 │   │   ├── (site)/               # [Public Site] 일반 사용자용 메인 홈페이지

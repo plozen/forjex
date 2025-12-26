@@ -1,4 +1,4 @@
-# PLOLUX System Architecture Technical Specification
+# PLOZEN System Architecture Technical Specification
 
 ## 1. Planning & User Interface Layer (기획 및 사용자 접점)
 
@@ -8,15 +8,15 @@
 
 - **Node:** User (사용자)
   - **Role:** 서비스 최종 사용자.
-  - **Action:** PLOLUX 홈페이지를 통해 '제작 의뢰'를 수행.
-  - **Flow:** User → PLOLUX 홈페이지 (Request).
+  - **Action:** PLOZEN 홈페이지를 통해 '제작 의뢰'를 수행.
+  - **Flow:** User → PLOZEN 홈페이지 (Request).
 - **Node:** 기획자 (Human Planner)
   - **Role:** 사용자 요구사항 분석 및 시스템 감독.
   - **Action:**
     - User와 커뮤니케이션(communication) 수행.
     - Prototype을 확인(read)하고 검수.
     - Figma Design에 대해 직접적인 디자인 수정(디자인 수정) 수행.
-- **Node:** PLOLUX 홈페이지 (Front Interface)
+- **Node:** PLOZEN 홈페이지 (Front Interface)
   - **Component:** 홈페이지 기획 입력 페이지 (Form Submit).
   - **Logic:** 사용자의 의뢰 내용을 정형화된 데이터로 변환하여 DB로 전송.
   - **Connection:** User → Input Page → Database.
@@ -25,7 +25,7 @@
 
 - **Node:** Database
   - **Role:** 기획 데이터(Raw Data)의 저장소.
-  - **Connection:** PLOLUX 홈페이지 (Write) / n8n (Read).
+  - **Connection:** PLOZEN 홈페이지 (Write) / n8n (Read).
 - **Node:** n8n (Workflow Orchestrator)
   - **Trigger:** DB에 새로운 기획 데이터 적재 시 실행.
   - **Process:** '데이터 조회' 수행 후, 내장된 로직에 따라 프롬프트 엔지니어링 수행.
