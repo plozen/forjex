@@ -58,3 +58,14 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+// =============================================================================
+// Layout Utilities
+// =============================================================================
+
+@mixin subpage-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  min-height: 100vh;
+}

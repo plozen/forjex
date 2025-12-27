@@ -66,11 +66,21 @@ export default function ServicesPage() {
                  For now, I'll use a placeholder or the assumed path if I can move them.
                  If image load fails, we should have a fallback.
                */}
-               <img 
+               <Image 
                  src={service.image} 
-                 alt={service.title} 
+                 alt={service.title}
+                 fill
+                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                 style={{ objectFit: 'cover' }}
                  onError={(e) => {
-                   (e.target as HTMLImageElement).src = 'https://placehold.co/600x400/111/D6FF00?text=' + service.title;
+                   // Note: Next.js Image component onError is a bit different, 
+                   // but for simple fallback in unoptimized mode it might behave similarly
+                   // or we rely on the fact these are static assets.
+                   // Setting src on the target of a Next.js Image might not work as expected 
+                   // in all cases, but keeping the logic simplistic for now.
+                   const target = e.target as HTMLImageElement;
+                   target.srcset = ""; // Clear srcset to prevent next.js from reloading original
+                   target.src = 'https://placehold.co/600x400/111/D6FF00?text=' + service.title;
                  }}
                />
             </div>

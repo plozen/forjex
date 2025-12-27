@@ -100,7 +100,7 @@ export default function QuoteForm() {
 
   return (
     <div className={styles.quotePage}>
-      <div className={styles.progressBar} style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }} />
+      {/* <div className={styles.progressBar} style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }} /> */}
       
       <div className={styles.cardContainer}>
         <AnimatePresence mode="wait" custom={direction}>

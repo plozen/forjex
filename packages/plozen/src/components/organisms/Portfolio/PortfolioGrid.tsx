@@ -62,13 +62,13 @@ export default function PortfolioGrid() {
               onClick={(e) => e.stopPropagation()}
             >
               <motion.div layoutId={`card-image-${selectedId}`} className={styles.modalImage}>
-                 <div 
-                   style={{ 
-                     width: '100%', 
-                     height: '100%', 
-                     background: selectedProject.gradient || 'linear-gradient(45deg, #333, #555)' 
-                   }} 
-                 />
+                 <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+                    <img 
+                      src={selectedProject.imageUrl} 
+                      alt={selectedProject.title} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    />
+                 </div>
               </motion.div>
               
               <button className={styles.closeBtn} onClick={() => setSelectedId(null)}>

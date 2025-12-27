@@ -21,15 +21,12 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
       whileHover={{ y: -5 }}
     >
       <motion.div layoutId={`card-image-${project.id}`} className={styles.imageContainer}>
-        <div 
-          style={{ 
-            width: '100%', 
-            height: '100%', 
-            background: project.gradient || 'linear-gradient(45deg, #333, #555)' 
-          }} 
-        >
-           {/* Replace with <Image> when real assets are available */}
-           {/* <Image src={project.imageUrl} alt={project.title} fill /> */}
+        <div className={styles.imageWrapper}>
+           <img 
+             src={project.imageUrl} 
+             alt={project.title} 
+             className={styles.projectImage}
+           />
         </div>
       </motion.div>
 

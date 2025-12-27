@@ -1,0 +1,105 @@
+@use "@/styles/abstracts/variables" as v;
+@use "@/styles/abstracts/mixins" as m;
+
+.item {
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    border-color: rgba(var(--accent-primary-rgb), 0.5);
+    background-color: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+
+  &:hover {
+    .question {
+      color: var(--accent-primary);
+    }
+    
+    .icon {
+      color: var(--accent-primary);
+    }
+  }
+
+  &[aria-expanded="true"] {
+    .question {
+      color: var(--accent-primary);
+    }
+    .icon {
+      color: var(--accent-primary);
+    }
+  }
+}
+
+.question {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  padding-right: 1.5rem;
+  line-height: 1.5;
+  transition: color 0.2s ease;
+  letter-spacing: -0.01em;
+
+  // Q. marker (optional enhancement)
+  &::before {
+    content: "Q.";
+    color: var(--accent-primary);
+    margin-right: 0.5rem;
+    font-weight: 800;
+    opacity: 0.8;
+  }
+
+  @include m.mobile {
+    font-size: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+.icon {
+  color: var(--text-secondary);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease; // Bouncy rotation
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.contentWrapper {
+  overflow: hidden;
+}
+
+.content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  font-size: 1rem;
+  
+  // Separation line if needed, or just padding
+  border-top: 1px solid transparent; 
+
+  @include m.mobile {
+    font-size: 0.95rem;
+    padding: 0 1.25rem 1.25rem 1.25rem;
+  }
+}
