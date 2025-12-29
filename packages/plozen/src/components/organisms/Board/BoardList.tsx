@@ -45,7 +45,7 @@ export default function BoardList() {
         .from('inquiries_list_view')
         .select('*', { count: 'exact' })
         .order('is_notice', { ascending: false })
-        .order('seq_id', { ascending: false })
+        .order('created_at', { ascending: false })
         .range(from, to);
 
       if (error) throw error;
@@ -138,7 +138,7 @@ export default function BoardList() {
                 >
                     {/* ID */}
                     <div className={`${styles.cell} ${styles.desktopOnly}`}>
-                    {post.isNotice ? '공지' : post.seq_id}
+                    {post.isNotice ? '공지' : totalCount - ((currentPage - 1) * ITEMS_PER_PAGE + index)}
                     </div>
 
                     {/* Title */}

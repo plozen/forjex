@@ -40,6 +40,18 @@ export default function BoardDetail({ post, onBack, onDeleteSuccess }: BoardDeta
 
   // Initial Content Load
   useEffect(() => {
+    // 조회수 증가
+    const incrementView = async () => {
+      try {
+        await supabase.rpc('increment_inquiry_view', { p_id: post.id });
+      } catch (error) {
+        console.error('Failed to increment view count', error);
+      }
+    };
+    incrementView();
+  }, [post.id, supabase]);
+
+  useEffect(() => {
     // 공개글이거나 이미 내용이 있는 경우 바로 표시
     if (!post.isPrivate && post.content) {
       setContent(post.content);
