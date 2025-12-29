@@ -50,7 +50,7 @@ function EditPageContent() {
     try {
       // 1. Fetch metadata from view first to check existence
       const { data: metaData, error: metaError } = await supabase
-        .from('inquiries_list_view' as any)
+        .from('inquiries_list_view')
         .select('*')
         .eq('id', id)
         .single();
@@ -64,7 +64,7 @@ function EditPageContent() {
       // 2. Fetch Content using RPC (Secure)
       const pw = passwordOverride || '';
       const { data: contentData, error: contentError } = await supabase.rpc('get_inquiry_content', {
-        p_id: id,
+        p_id: id!,
         p_password: pw
       });
 
@@ -83,7 +83,7 @@ function EditPageContent() {
 
       // Success
       const post = contentData[0];
-      const safeMetaData = metaData as any;
+      const safeMetaData = metaData;
 
       setFormData({
         title: safeMetaData?.title || "",
@@ -138,7 +138,7 @@ function EditPageContent() {
 
     try {
       const { data, error } = await supabase.rpc('update_inquiry', {
-        p_id: id,
+        p_id: id!,
         p_password: formData.password,
         p_title: formData.title,
         p_content: formData.content,
