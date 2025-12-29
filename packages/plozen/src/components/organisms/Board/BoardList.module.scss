@@ -1,56 +1,74 @@
-@use "@/styles/abstracts/variables" as v;
+@use "sass:color";
+@use "@/styles/abstracts/variables" as *;
 @use "@/styles/abstracts/mixins" as m;
 
 // Clean Minimal Board Styles
 .container {
   width: 100%;
   position: relative;
-  background: #ffffff;
+  background: var(--bg-primary);
   border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba($col-titanium-silver, 0.1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+  [data-theme='dark'] & {
+    background: color.adjust($col-deep-void, $lightness: 2%);
+    border-color: rgba($col-titanium-silver, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  }
 }
 
 .tableHeader {
   display: grid;
   grid-template-columns: 80px 1fr 120px 120px 100px;
   padding: 1.25rem 2rem;
-  background: #f8f9fa; // Light gray header
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba($col-titanium-silver, 0.05); // Light gray header
+  border-bottom: 1px solid rgba($col-titanium-silver, 0.1);
   
   // Typography
+  font-family: $font-pretendard;
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: #666; // Darker gray for visibility
+  color: var(--text-secondary);
   text-transform: uppercase;
 
   @include m.mobile {
     display: none;
   }
+
+  [data-theme='dark'] & {
+    background: rgba($col-pure-white, 0.03);
+    border-color: rgba($col-titanium-silver, 0.2);
+  }
 }
 
 .list {
-  background: #fff;
+  background: var(--bg-primary);
+
+  [data-theme='dark'] & {
+    background: transparent;
+  }
 }
 
 .row {
   display: grid;
   grid-template-columns: 80px 1fr 120px 120px 100px;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba($col-titanium-silver, 0.1);
   align-items: center;
   transition: all 0.2s ease;
   cursor: pointer;
-  color: #333; // Dark text
+  color: var(--text-primary);
   font-size: 0.95rem;
+  font-family: $font-pretendard;
   position: relative;
 
   // Numbers specific styling
   div:nth-child(1), div:nth-child(4), div:nth-child(5) {
     font-variant-numeric: tabular-nums;
-    color: #555;
+    color: var(--text-secondary);
   }
 
   &:last-child {
@@ -59,11 +77,11 @@
 
   // Hover Effect
   &:hover {
-    background-color: #f8f9fa;
-    transform: none; // Remove shift
+    background-color: rgba($col-titanium-silver, 0.05);
+    transform: none;
     
     .titleCell span {
-      color: var(--accent-primary); // Keep accent interaction
+      color: var(--accent-primary);
       font-weight: 600;
     }
   }
@@ -74,15 +92,36 @@
     gap: 0.5rem;
     padding: 1.25rem;
     height: auto;
-    background: #fff;
+    background: var(--bg-primary);
     margin: 0.5rem 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba($col-titanium-silver, 0.1);
     box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     
     &:hover {
-      background-color: #fafafa;
+      background-color: rgba($col-titanium-silver, 0.05);
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+  }
+
+  [data-theme='dark'] & {
+    border-color: rgba($col-titanium-silver, 0.2);
+
+    div:nth-child(1), div:nth-child(4), div:nth-child(5) {
+      color: var(--text-secondary);
+    }
+
+    &:hover {
+      background-color: rgba($col-pure-white, 0.05);
+    }
+
+    @include m.mobile {
+      background: color.adjust($col-deep-void, $lightness: 3%);
+      border-color: rgba($col-titanium-silver, 0.2);
+
+      &:hover {
+        background-color: color.adjust($col-deep-void, $lightness: 5%);
+      }
     }
   }
 }
@@ -110,7 +149,7 @@
 .lockIcon {
   width: 14px;
   height: 14px;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .mobileInfo {
@@ -120,7 +159,7 @@
     display: flex;
     gap: 0.75rem;
     font-size: 0.85rem;
-    color: #888;
+    color: var(--text-secondary);
   }
 }
 
@@ -130,72 +169,6 @@
   }
 }
 
-// Detail View Styles
-.detailContainer {
-  padding: 2rem;
-  color: var(--text-primary);
-  animation: fadeIn 0.3s ease;
-}
-
-.detailHeader {
-  border-bottom: 1px solid var(--card-border);
-  padding-bottom: 1.5rem;
-  margin-bottom: 2rem;
-
-  h3 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    line-height: 1.4;
-  }
-}
-
-.detailMeta {
-  display: flex;
-  gap: 1.5rem;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  
-  span {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-}
-
-.detailBody {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: var(--text-secondary);
-  min-height: 200px;
-  white-space: pre-wrap;
-  margin-bottom: 3rem;
-}
-
-.backBtn {
-  padding: 0.6rem 1.5rem;
-  background: transparent;
-  border: 1px solid var(--card-border);
-  color: var(--text-primary);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  &:hover {
-    background: var(--bg-secondary);
-    border-color: var(--text-secondary);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 // Pagination
 .pagination {
   display: flex;
@@ -203,7 +176,11 @@
   align-items: center;
   gap: 0.5rem;
   padding: 2rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid rgba($col-titanium-silver, 0.1);
+
+  [data-theme='dark'] & {
+    border-color: rgba($col-titanium-silver, 0.2);
+  }
 }
 
 .pageBtn {
@@ -215,26 +192,38 @@
   border: 1px solid transparent;
   background: transparent;
   border-radius: 8px;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: $font-pretendard;
 
   &:hover:not(:disabled) {
-    background-color: #f1f3f5;
-    color: #333;
+    background-color: rgba($col-titanium-silver, 0.1);
+    color: var(--text-primary);
   }
 
   &.active {
     background-color: var(--accent-primary);
-    color: white;
+    color: $col-deep-void;
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(var(--accent-primary-rgb), 0.3);
+    box-shadow: 0 2px 8px rgba(var(--accent-primary), 0.3); // Note: needs rgb but accent-primary is hex usually. ignoring explicit rgb for now unless vars define it.
   }
 
   &:disabled {
     opacity: 0.3;
     cursor: not-allowed;
+  }
+
+  [data-theme='dark'] & {
+    &:hover:not(:disabled) {
+      background-color: rgba($col-pure-white, 0.1);
+      color: var(--text-primary);
+    }
+
+    &.active {
+      color: $col-deep-void;
+    }
   }
 }

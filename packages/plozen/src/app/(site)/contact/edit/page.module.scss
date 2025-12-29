@@ -13,6 +13,10 @@
   margin-bottom: 2rem;
   text-align: center;
   color: #111;
+
+  :global(.dark) & {
+    color: #fff;
+  }
 }
 
 .formContainer {
@@ -24,6 +28,12 @@
 
   @include m.mobile {
     padding: 1.5rem;
+  }
+
+  :global(.dark) & {
+    background: #1a1a1a;
+    border-color: #333;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -48,6 +58,10 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: #444;
+
+  :global(.dark) & {
+    color: #ccc;
+  }
 }
 
 .input,
@@ -60,10 +74,26 @@
   outline: none;
   transition: border-color 0.2s;
   background: #fcfcfc;
+  color: #111;
 
   &:focus {
     border-color: #000;
     background: #fff;
+  }
+
+  :global(.dark) & {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #fff;
+
+    &:focus {
+      border-color: #fff;
+      background: #333;
+    }
+
+    &::placeholder {
+      color: #666;
+    }
   }
 }
 
@@ -84,6 +114,10 @@
     height: 18px;
     cursor: pointer;
     accent-color: #000;
+
+    :global(.dark) & {
+      accent-color: #fff;
+    }
   }
 
   label {
@@ -91,6 +125,10 @@
     font-size: 0.95rem;
     color: #333;
     user-select: none;
+
+    :global(.dark) & {
+      color: #ddd;
+    }
   }
 }
 
@@ -122,6 +160,16 @@
     &:hover:not(:disabled) {
       background: #eee;
     }
+
+    :global(.dark) & {
+      background: #333;
+      color: #ccc;
+
+      &:hover:not(:disabled) {
+        background: #444;
+        color: #fff;
+      }
+    }
   }
 
   .submitBtn {
@@ -133,6 +181,17 @@
       background: #333;
       border-color: #333;
     }
+
+    :global(.dark) & {
+      background: #fff;
+      border-color: #fff;
+      color: #000;
+
+      &:hover:not(:disabled) {
+        background: #ddd;
+        border-color: #ddd;
+      }
+    }
   }
 }
 
@@ -142,7 +201,44 @@
   :global(.quill) {
     background: #fff;
     border-radius: 8px;
+
+    :global(.dark) & {
+      background: #2a2a2a;
+      border: 1px solid #444;
+      
+      .ql-toolbar {
+        background: #333;
+        border-color: #444;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        
+        .ql-stroke {
+          stroke: #ccc;
+        }
+        .ql-fill {
+          fill: #ccc;
+        }
+        .ql-picker {
+          color: #ccc;
+        }
+        button:hover .ql-stroke {
+          stroke: #fff;
+        }
+      }
+      
+      .ql-container {
+        border-color: #444;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        color: #fff;
+      }
+
+      .ql-editor.ql-blank::before {
+        color: #666;
+      }
+    }
   }
+  
   :global(.ql-toolbar) {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
