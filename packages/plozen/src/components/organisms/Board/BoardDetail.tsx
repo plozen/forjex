@@ -125,7 +125,7 @@ export default function BoardDetail({ post, onBack, onDeleteSuccess }: BoardDeta
         // 여기서는 간단히 페이지 이동 후 재인증 유도하거나, 세션 스토리지 사용. 
         // 일단 이동만 시킴.)
         setModalOpen(false);
-        router.push(`/contact/edit/${post.id}`);
+        router.push(`/contact/edit?id=${post.id}`);
       }
     } catch (e) {
       console.error(e);

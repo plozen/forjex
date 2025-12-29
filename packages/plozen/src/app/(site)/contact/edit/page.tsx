@@ -1,24 +1,12 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import dynamic from 'next/dynamic';
 import styles from "./page.module.scss";
 import { createClient } from "@/lib/supabase/client";
 import PasswordModal from "@/components/organisms/Board/PasswordModal";
-
-// 1. Force Dynamic Rendering (Important for [id] dynamic routes in output: 'export' env)
-// This tells Next.js NOT to try and pre-render this page at build time.
-// export const dynamic = "force-dynamic"; // 'force-dynamic' is not valid in 'use client' file directly? 
-// No, route segment config options like 'dynamic' must be exported from a Server Component (or layout).
-// Since this is a "use client" page, the best way to handle this in a static export is actually different.
-// BUT, if we are purely client-side fetching (which we are), we can't really "fix" the build error of missing generateStaticParams
-// UNLESS we tell Next.js to ignore this for static generation.
-//
-// However, the error log says: "Property 'title' does not exist on type 'SelectQueryError...'"
-// This is a TypeScript error, NOT a runtime build error about static params yet.
-// Let's fix the TS error first.
 
 // React Quill Dynamic Import
 const ReactQuill = dynamic(() => import('react-quill-new'), { 
@@ -27,10 +15,10 @@ const ReactQuill = dynamic(() => import('react-quill-new'), {
 });
 import 'react-quill-new/dist/quill.snow.css';
 
-export default function EditPage() {
+function EditPageContent() {
   const router = useRouter();
-  const params = useParams();
-  const id = params.id as string;
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id'); // Get ID from query params
   const supabase = createClient();
 
   // States
@@ -48,15 +36,19 @@ export default function EditPage() {
 
   // Init Data Fetch
   useEffect(() => {
-    if (id) {
-      fetchData();
+    if (!id) {
+      alert("잘못된 접근입니다.");
+      router.back();
+      return;
     }
+    fetchData();
   }, [id]);
 
   const fetchData = async (passwordOverride?: string) => {
+    if (!id) return;
+    
     try {
       // 1. Fetch metadata from view first to check existence
-      // Fix TS Error: explicit generic or type assertion might be needed if types are tricky
       const { data: metaData, error: metaError } = await supabase
         .from('inquiries_list_view' as any)
         .select('*')
@@ -70,7 +62,6 @@ export default function EditPage() {
       }
 
       // 2. Fetch Content using RPC (Secure)
-      // If we have a passwordOverride (from modal), use it. Otherwise try empty.
       const pw = passwordOverride || '';
       const { data: contentData, error: contentError } = await supabase.rpc('get_inquiry_content', {
         p_id: id,
@@ -81,37 +72,27 @@ export default function EditPage() {
 
       // If no content returned, it means password was wrong or empty for a private post
       if (!contentData || contentData.length === 0) {
-        // It's private or password failed.
-        // Check if we already tried a password
         if (passwordOverride) {
           alert("비밀번호가 일치하지 않습니다.");
-          // keep modal open
         } else {
-          // First attempt, assume private -> Open Modal
           setModalOpen(true);
         }
         setIsLoading(false);
         return;
       }
 
-      // Success - We have content
+      // Success
       const post = contentData[0];
-      
-      // Fix TS Error: Ensure metaData properties are accessed safely or typed correctly
-      // The error complained 'title' does not exist on 'SelectQueryError'. 
-      // This implies TS thought metaData could be the Error object, which happens if destructuring is ambiguous or types are inferred weirdly.
-      // But we handled 'metaError' above.
-      // Let's assert metaData structure to be safe.
-      const safeMetaData = metaData as any; 
+      const safeMetaData = metaData as any;
 
       setFormData({
         title: safeMetaData?.title || "",
         author: safeMetaData?.author_name || "",
-        password: passwordOverride || "", // Pre-fill if user just entered it
+        password: passwordOverride || "",
         content: post.content,
         isPrivate: post.is_private,
       });
-      setModalOpen(false); // Close modal if open
+      setModalOpen(false);
       setIsLoading(false);
 
     } catch (e) {
@@ -122,7 +103,6 @@ export default function EditPage() {
   };
 
   const handleModalSubmit = (password: string) => {
-    // Retry fetching with the entered password
     fetchData(password);
   };
 
@@ -159,7 +139,7 @@ export default function EditPage() {
     try {
       const { data, error } = await supabase.rpc('update_inquiry', {
         p_id: id,
-        p_password: formData.password, // Authentication for update
+        p_password: formData.password,
         p_title: formData.title,
         p_content: formData.content,
         p_author_name: formData.author,
@@ -168,7 +148,6 @@ export default function EditPage() {
 
       if (error) throw error;
       
-      // update_inquiry returns boolean (true if updated, false if password wrong)
       if (data === true) {
         alert("게시글이 수정되었습니다.");
         router.push("/contact?tab=general"); 
@@ -293,7 +272,6 @@ export default function EditPage() {
         </div>
       </form>
 
-      {/* Security Modal - Shows only if content fetch requires password */}
       <PasswordModal 
         isOpen={modalOpen}
         onClose={() => router.back()}
@@ -302,5 +280,14 @@ export default function EditPage() {
         description="수정을 위해 먼저 비밀번호를 입력해주세요."
       />
     </motion.div>
+  );
+}
+
+// Wrap in Suspense for useSearchParams safety
+export default function EditPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EditPageContent />
+    </Suspense>
   );
 }
