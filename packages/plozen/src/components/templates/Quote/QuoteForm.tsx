@@ -7,48 +7,79 @@ import styles from "./QuoteForm.module.scss";
 import { createClient } from "@/lib/supabase/client";
 import { Database, Json } from "@/types/database.types";
 
+/**
+ * @file QuoteForm.tsx
+ * @description
+ * 사용자로부터 프로젝트 의뢰 정보를 입력받는 다단계 폼(Multi-step Form) 컴포넌트입니다.
+ * 애니메이션을 위해 Framer Motion을 사용하며, Supabase DB와 연동하여 데이터를 저장합니다.
+ * 
+ * 주요 기능:
+ * 1. 단계별 질문(Single/Multi Select, Text Input 등) 렌더링
+ * 2. 조건부 입력 필드 처리 (예: "기타" 선택 시 텍스트 입력 노출)
+ * 3. Supabase 'project_requests' 테이블로 데이터 전송 및 타입 매핑
+ */
+
 // --- Types ---
 
+/** 질문 유형 정의 */
 type QuestionType = "single-select" | "multi-select" | "text" | "textarea" | "multi-input";
 
+/**
+ * 다중 입력(Multi-input) 폼에서 개별 입력 필드의 정의
+ */
 interface InputField {
-  key: string;
-  label?: string;
+  key: string;          // 데이터 저장 시 사용될 키 (DB 컬럼명과 매핑됨)
+  label?: string;       // 사용자에게 보여질 라벨
   type: "text" | "textarea" | "date" | "email" | "tel" | "file";
   placeholder?: string;
   required?: boolean;
 }
 
+/**
+ * 선택지(Option) 정의
+ * Single/Multi Select 질문에서 사용됩니다.
+ */
 interface Option {
-  label: string;
-  value: string;
-  description?: string;
-  // Conditional Input Logic
+  label: string;        // 화면 표시 텍스트
+  value: string;        // 내부 저장 값
+  description?: string; // 부가 설명 (선택적)
+  
+  // -- 조건부 입력 로직 (Conditional Logic) --
+  // 특정 옵션을 선택했을 때 추가 정보를 입력받아야 하는 경우 사용 (예: "기타", "직접 입력")
   hasInput?: boolean; 
   inputType?: "text" | "number"; 
   inputPlaceholder?: string;
-  inputKey?: string; 
+  inputKey?: string;    // 추가 입력값을 저장할 키 (answers 객체 내의 키)
   inputRequired?: boolean;
 }
 
-// SubSection removed
-
+/**
+ * 질문(Question) 정의
+ * 각 단계(Step)를 구성하는 데이터 구조입니다.
+ */
 interface Question {
   id: number;
-  key?: string; // Main key for the answer
-  title: string;
-  subtitle?: string;
-  type: QuestionType;
-  // Select / Multi-Select
+  key?: string;         // 해당 질문의 답변을 저장할 주요 키 (answers 객체의 키)
+  title: string;        // 질문 제목
+  subtitle?: string;    // 질문 부제목/설명
+  type: QuestionType;   // 질문 유형
+  
+  // Select / Multi-Select 유형일 때 사용
   options?: Option[];
-  // Text / Textarea
+  
+  // Text / Textarea 유형일 때 사용
   placeholder?: string;
-  // Multi-Input
+  
+  // Multi-Input 유형일 때 사용
   inputs?: InputField[];
 }
 
 // --- Data ---
 
+/**
+ * 폼 질문 데이터 배열
+ * 순서대로 렌더링되며, Step ID는 1부터 시작합니다.
+ */
 const questions: Question[] = [
   {
     id: 1,
@@ -76,6 +107,7 @@ const questions: Question[] = [
       { 
         label: "기타", 
         value: "etc", 
+        // '기타' 선택 시 직접 금액을 입력받기 위한 조건부 설정
         hasInput: true, 
         inputType: "text", 
         inputKey: "budget_custom", 
@@ -117,6 +149,7 @@ const questions: Question[] = [
       { 
         label: "서비스 소개", 
         value: "service_intro",
+        // 서비스 소개 선택 시 개수를 파악하기 위함
         hasInput: true,
         inputType: "number",
         inputKey: "service_count",
@@ -184,15 +217,28 @@ const questions: Question[] = [
 ];
 
 export default function QuoteForm() {
+  // 현재 단계 인덱스 (0부터 시작)
   const [currentStep, setCurrentStep] = useState(0);
+  
+  // 모든 답변을 저장하는 상태 객체
+  // key: 질문의 key 또는 조건부 입력의 inputKey
+  // value: 사용자 입력값 (string 또는 string 배열)
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+  
+  // 애니메이션 방향 (1: 다음, -1: 이전)
   const [direction, setDirection] = useState(0);
+  
+  // 제출 중 상태 로딩 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const currentQuestion = questions[currentStep];
 
   // --- Helpers ---
 
+  /**
+   * Supabase 저장을 위해 문자열 배열이나 undefined 값을 단일 문자열로 변환합니다.
+   * DB 컬럼이 Text 타입일 경우 배열을 저장할 수 없으므로 join 처리합니다.
+   */
   const getString = (val: string | string[] | undefined): string | null => {
     if (val === undefined || val === null) return null;
     if (Array.isArray(val)) return val.join(', ');
@@ -201,15 +247,18 @@ export default function QuoteForm() {
 
   // --- Handlers ---
 
+  /** 다음 단계로 이동 */
   const handleNext = () => {
     if (currentStep < questions.length - 1) {
       setDirection(1);
       setCurrentStep(prev => prev + 1);
     } else {
+      // 마지막 단계에서는 제출 로직 실행
       submitForm();
     }
   };
 
+  /** 이전 단계로 이동 */
   const handlePrev = () => {
     if (currentStep > 0) {
       setDirection(-1);
@@ -217,11 +266,15 @@ export default function QuoteForm() {
     }
   };
 
+  /** 단일 선택 항목 핸들러 */
   const handleSingleSelect = (key: string, value: string) => {
     setAnswers(prev => ({ ...prev, [key]: value }));
   };
 
-  // Multi-Select Logic: Toggle value in array
+  /** 
+   * 다중 선택 항목 핸들러
+   * 배열에 값을 추가하거나 제거합니다 (Toggle 방식).
+   */
   const handleMultiSelect = (key: string, value: string) => {
     const currentList: string[] = Array.isArray(answers[key]) ? answers[key] : [];
     if (currentList.includes(value)) {
@@ -231,15 +284,21 @@ export default function QuoteForm() {
     }
   };
 
+  /** 텍스트 입력 핸들러 */
   const handleInputChange = (key: string, value: string) => {
     setAnswers(prev => ({ ...prev, [key]: value }));
   };
 
+  /**
+   * 폼 데이터 제출 및 Supabase DB 저장
+   * 'project_requests' 테이블 스키마에 맞춰 데이터를 매핑합니다.
+   */
   const submitForm = async () => {
     setIsSubmitting(true);
     const supabase = createClient();
 
-    // Prepare JSON data for features
+    // Features(기능) 관련 데이터는 JSON 형태로 구조화하여 저장
+    // answers 객체에 산재된 관련 필드들을 모아서 하나의 JSON 객체로 만듭니다.
     const featuresData: { [key: string]: Json | undefined } = {
       selected: Array.isArray(answers.features) ? answers.features : [],
       service_count: getString(answers.service_count),
@@ -247,28 +306,33 @@ export default function QuoteForm() {
       etc: getString(answers.features_etc)
     };
 
-      const payload: Database['public']['Tables']['project_requests']['Insert'] = {
-        project_type: getString(answers.service_type),
-        budget_range: answers.budget === 'etc' 
-          ? `Custom: ${getString(answers.budget_custom) || ''}` 
-          : getString(answers.budget),
-        
-        // New Columns
-        design_mood: getString(answers.design_mood), 
-        features: featuresData as Json,
-        target_audience: getString(answers.target_audience),
-        project_goal: getString(answers.project_goal),
+    /**
+     * DB Insert Payload 생성
+     * Database['public']['Tables']['project_requests']['Insert'] 타입을 사용하여 타입 일치 보장
+     */
+    const payload: Database['public']['Tables']['project_requests']['Insert'] = {
+      // 1. 기본 프로젝트 정보
+      project_type: getString(answers.service_type),
+      budget_range: answers.budget === 'etc' 
+        ? `Custom: ${getString(answers.budget_custom) || ''}` 
+        : getString(answers.budget),
+      
+      // 2. 신규 추가 컬럼 매핑 (2025-12-31 업데이트)
+      design_mood: getString(answers.design_mood), 
+      features: featuresData as Json, // JSONB 컬럼
+      target_audience: getString(answers.target_audience),
+      project_goal: getString(answers.project_goal),
 
-        // Standard Columns
-        client_name: getString(answers.client_name) ?? '', // Required field
-        company_name: getString(answers.company_name),
-        contact_email: getString(answers.contact_email) ?? '', // Required field
-        contact_phone: getString(answers.contact_phone),
-        description: getString(answers.description) ?? '', 
-        
-        reference_urls: getString(answers.design_ref_url), 
-        target_deadline: null 
-      };
+      // 3. 담당자 및 표준 정보
+      client_name: getString(answers.client_name) ?? '', // NOT NULL
+      company_name: getString(answers.company_name),
+      contact_email: getString(answers.contact_email) ?? '', // NOT NULL
+      contact_phone: getString(answers.contact_phone),
+      description: getString(answers.description) ?? '', 
+      
+      reference_urls: getString(answers.design_ref_url), 
+      target_deadline: null // 현재 폼에서는 입력받지 않음
+    };
 
     try {
       const { error } = await supabase
@@ -278,7 +342,7 @@ export default function QuoteForm() {
       if (error) throw error;
 
       alert("문의가 성공적으로 접수되었습니다! 담당자가 곧 연락드리겠습니다.");
-      // Optional: Reset form or redirect
+      // 추후 개선: 성공 페이지로 리다이렉트 또는 폼 초기화 로직 추가 가능
     } catch (error) {
       console.error('Error submitting form:', error);
       alert("접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
@@ -289,14 +353,20 @@ export default function QuoteForm() {
 
   // --- Validation ---
 
+  /**
+   * 현재 단계의 유효성 검사
+   * 필수 입력값이 모두 채워졌는지 확인합니다.
+   * @param q 현재 질문 객체
+   */
   const validateStep = (q: Question): boolean => {
     if (!q) return false;
 
-    // Single Select
+    // 1. Single Select 검증
     if (q.type === 'single-select' && q.key && q.options) {
       const val = answers[q.key];
       if (!val) return false;
-      // Check conditional input requirement
+      
+      // 조건부 입력 필드(hasInput)가 필수인 경우 체크
       const selectedOpt = q.options.find(o => o.value === val);
       if (selectedOpt?.hasInput && selectedOpt?.inputRequired && selectedOpt?.inputKey) {
         const inputVal = getString(answers[selectedOpt.inputKey]);
@@ -305,14 +375,13 @@ export default function QuoteForm() {
       return true;
     }
 
-    // Multi Select
+    // 2. Multi Select 검증
     if (q.type === 'multi-select' && q.key && q.options) {
       const list = answers[q.key];
-      // Assuming at least one selection is required? Spec validation says "Required fields filled".
-      // Let's assume selecting at least one option is required.
+      // 최소 하나 이상 선택 필수
       if (!Array.isArray(list) || list.length === 0) return false;
       
-      // Check conditional inputs for ALL selected options
+      // 선택된 항목들 중 조건부 입력 필드가 있다면 모두 검증
       const allValid = q.options.every(opt => {
         if (list.includes(opt.value) && opt.hasInput && opt.inputRequired && opt.inputKey) {
           const inputVal = getString(answers[opt.inputKey]);
@@ -323,13 +392,13 @@ export default function QuoteForm() {
       return allValid;
     }
 
-    // Text / Textarea
+    // 3. Text / Textarea 검증
     if ((q.type === 'text' || q.type === 'textarea') && q.key) {
       const val = getString(answers[q.key]);
-      return !!val && val.trim() !== ""; // Assuming these are required steps
+      return !!val && val.trim() !== "";
     }
 
-    // Multi Input (Form)
+    // 4. Multi Input (마지막 연락처 폼) 검증
     if (q.type === 'multi-input' && q.inputs) {
       return q.inputs.every(input => {
         if (!input.required) return true;
@@ -337,8 +406,6 @@ export default function QuoteForm() {
         return !!val && val.trim() !== "";
       });
     }
-    
-
 
     return true;
   };
@@ -347,6 +414,7 @@ export default function QuoteForm() {
 
   // --- Renderers ---
 
+  /** 단일 선택 UI 렌더링 */
   const renderSingleSelect = (key: string, options?: Option[]) => (
     <div className={styles.options}>
       {options?.map((option) => (
@@ -361,7 +429,7 @@ export default function QuoteForm() {
             </div>
           </button>
           
-          {/* Conditional Input */}
+          {/* 조건부 입력 필드 애니메이션 */}
           <AnimatePresence>
             {option.hasInput && answers[key] === option.value && (
               <motion.div
@@ -388,6 +456,7 @@ export default function QuoteForm() {
     </div>
   );
 
+  /** 다중 선택 UI 렌더링 */
   const renderMultiSelect = (key: string, options?: Option[]) => (
     <div className={styles.options}>
       {options?.map((option) => {
@@ -429,6 +498,7 @@ export default function QuoteForm() {
     </div>
   );
 
+  /** 다중 필드 입력 UI 렌더링 (담당자 정보 등) */
   const renderInputs = (inputs?: InputField[]) => (
     <div className={styles.multiInputContainer}>
       {inputs?.map((input) => (
@@ -441,7 +511,7 @@ export default function QuoteForm() {
               value={answers[input.key] || ""}
               onChange={(e) => handleInputChange(input.key, e.target.value)}
               rows={4}
-              style={{ resize: "none", marginTop: '8px' }} // Keep margin for textarea as it might not be wrapped if I choose not to
+              style={{ resize: "none", marginTop: '8px' }} 
             />
           ) : (
             <div className={styles.inputLineWrapper}>
@@ -459,6 +529,7 @@ export default function QuoteForm() {
     </div>
   );
 
+  /** 현재 질문 타입에 따른 컨텐츠 분기 처리 */
   const renderStepContent = (q: Question) => {
     switch (q.type) {
       case 'single-select':
@@ -484,7 +555,7 @@ export default function QuoteForm() {
     }
   };
 
-  // Motion Variants
+  // Framer Motion Variants 설정
   const variants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 50 : -50,
@@ -511,15 +582,32 @@ export default function QuoteForm() {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className={styles.card}
           >
+            {/* --- Progress Bar --- */}
+            <div className={styles.progressBarContainer}>
+              <motion.div
+                className={styles.progressBarFill}
+                initial={{ width: 0 }}
+                animate={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              />
+            </div>
+
+            {/* --- Step Header --- */}
             <div className={styles.question}>
+              <span className={styles.stepIndicator}>
+                STEP {String(currentStep + 1).padStart(2, '0')}
+                <span className={styles.stepTotal}> / {String(questions.length).padStart(2, '0')}</span>
+              </span>
               <motion.h2 layoutId="title">{currentQuestion.title}</motion.h2>
               {currentQuestion.subtitle && <p>{currentQuestion.subtitle}</p>}
             </div>
 
-            <div className={styles.content} style={{ overflowY: 'auto', maxHeight: '60vh' }}>
+            {/* 입력 컨텐츠 영역 */}
+            <div className={styles.scrollableContent}>
               {renderStepContent(currentQuestion)}
             </div>
 
+            {/* 하단 네비게이션 버튼 */}
             <div className={styles.navigation}>
               <button 
                 className={`${styles.navBtn} ${styles.prev}`} 

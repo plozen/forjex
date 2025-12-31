@@ -2,42 +2,57 @@
 @use "../../../styles/abstracts/variables" as *;
 @use "../../../styles/abstracts/mixins" as *;
 
+/**
+ * QuoteForm 관련 스타일
+ * - 중앙 정렬된 카드 레이아웃
+ * - 다크 모드/라이트 모드 대응 (CSS Variables 및 SCSS color.adjust 활용)
+ * - 반응형 디자인 (모바일 대응)
+ */
+
+// 전체 페이지 컨테이너
 .quotePage {
   min-height: 100vh;
-  background-color: var(--bg-primary);
-  @include flex-center;
+  background-color: var(--bg-primary); // 테마 배경색
+  @include flex-center; // 중앙 정렬 Mixin
   padding: 40px 24px;
   position: relative;
   overflow: hidden;
 }
 
+// 3D 회전 효과 등을 위한 카드 컨테이너
 .cardContainer {
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   position: relative;
   perspective: 1000px;
 }
 
+// 질문 카드의 본체
 .card {
   background-color: var(--bg-primary);
-  border: 1px solid rgba($col-titanium-silver, 0.2);
+  border: 1px solid rgba($col-titanium-silver, 0.2); // 은은한 테두리
   border-radius: 16px;
   padding: 48px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); // 부드러운 그림자
   @include flex-column;
   gap: 32px;
+  position: relative; // For progress bar positioning
+  overflow: hidden; // To clip progress bar corners
   
-  // High contrast support
+  // High contrast support (다크 모드별 별도 스타일링)
+  // [data-theme='dark'] 속성이 상위 요소에 있을 때 적용
   [data-theme='dark'] & {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-    background-color: color.adjust($col-deep-void, $lightness: 2%);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); // 다크 모드에서 더 깊은 그림자
+    background-color: color.adjust($col-deep-void, $lightness: 2%); // 미세하게 밝은 배경
   }
 
+  // 모바일 반응형 padding 조정
   @include mobile {
     padding: 32px 24px;
   }
 }
 
+// 질문 타이틀 및 설명 영역
 .question {
   h2 {
     font-family: $font-montserrat;
@@ -56,12 +71,37 @@
   }
 }
 
+.scrollableContent {
+  overflow-y: auto;
+  max-height: 55vh;
+  padding-right: 4px; // Added padding as requested
+  width: 100%;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($col-titanium-silver, 0.3);
+    border-radius: 3px;
+    &:hover {
+      background-color: rgba($col-titanium-silver, 0.5);
+    }
+  }
+}
+
+
+// 선택지 목록 컨테이너
 .options {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+// 개별 선택지 버튼 스타일
 .optionBtn {
   padding: 20px;
   border: 1px solid rgba($col-titanium-silver, 0.3);
@@ -73,15 +113,17 @@
   transition: all 0.2s ease;
   background: transparent;
 
+  // Hover 효과
   &:hover {
     border-color: var(--accent-primary);
-    background-color: rgba($col-bio-lime, 0.05);
+    background-color: rgba($col-bio-lime, 0.05); // 아주 연한 라임색 배경
   }
 
 
+  // 선택된 상태 스타일
   &.selected {
     border-color: var(--accent-primary);
-    background-color: rgba($col-bio-lime, 0.1);
+    background-color: rgba($col-bio-lime, 0.1); // 조금 더 진한 라임색 배경
     color: var(--accent-primary);
     font-weight: $font-weight-bold;
   }
@@ -109,15 +151,14 @@
   color: var(--text-secondary);
   font-weight: normal;
   
-  // When selected, keep desc readable but maybe lighter/different
+  // 버튼이 선택되었을 때 설명 텍스트 스타일 조정
   .optionBtn.selected & {
     color: var(--accent-primary);
     opacity: 0.8;
   }
 }
 
-// .conditionalInput style removed to use shared input field styles
-
+// 조합형 컨테이너 (사용되지 않을 수 있으나 유지)
 .compositeContainer {
   display: flex;
   flex-direction: column;
@@ -126,27 +167,26 @@
 }
 
 .sectionBlock {
-  // Styles for section blocks in composite step
   .sectionTitle {
     font-family: $font-pretendard;
-    font-size: 1.3rem; // Slightly larger for section header
+    font-size: 1.3rem; 
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 24px; // More space below title
+    margin-bottom: 24px;
     letter-spacing: -0.02em;
   }
 }
 
-
+// 다중 입력 필드 컨테이너
 .multiInputContainer {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-// Wrapper for the "Line on the left" style
+// 입력 필드 좌측 강조 선 래퍼
 .inputLineWrapper {
-  border-left: 2px solid var(--accent-primary);
+  border-left: 2px solid var(--accent-primary); 
   padding-left: 10px;
   margin-top: 8px;
   width: 100%;
@@ -155,7 +195,7 @@
 .inputGroup {
   display: flex;
   flex-direction: column;
-  gap: 0; // Spacing handled by margin-top of wrapper
+  gap: 0; 
 }
 
 .inputLabel {
@@ -165,13 +205,14 @@
   font-family: $font-pretendard;
 }
 
+// 공통 입력 필드 (Input, Textarea)
 .inputField {
   width: 100%;
-  padding: 12px 0; // Standard padding
+  padding: 12px 0;
   font-size: 1.1rem;
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba($col-titanium-silver, 0.4);
+  border-bottom: 1px solid rgba($col-titanium-silver, 0.4); // 밑줄 스타일
   color: var(--text-primary);
   font-family: $font-pretendard;
   outline: none;
@@ -188,22 +229,23 @@
   }
 }
 
-// Textarea override
+// Textarea 전용 스타일 오버라이드
 textarea.inputField {
-  border: 1px solid rgba($col-titanium-silver, 0.4);
+  border: 1px solid rgba($col-titanium-silver, 0.4); // 전체 테두리
   border-radius: 8px;
   padding: 16px;
   min-height: 120px;
-  margin-top: 0; // Reset as wrapper has margin
+  margin-top: 0;
   
   &:focus {
     border-color: var(--accent-primary);
   }
 }
 
+// 네비게이션 버튼 영역 (이전/다음)
 .navigation {
   @include flex-between;
-  margin-top: 40px; // Increased spacing
+  margin-top: 40px; 
   align-items: center;
 }
 
@@ -214,8 +256,9 @@ textarea.inputField {
   transition: all 0.2s;
   font-size: 1rem;
 
+  // '이전' 버튼 스타일 (텍스트 링크 형태)
   &.prev {
-    padding: 12px 0; // Text link style
+    padding: 12px 0; 
     color: var(--text-secondary);
     background: transparent;
     font-weight: normal;
@@ -226,11 +269,12 @@ textarea.inputField {
     }
   }
 
+  // '다음'/'제출' 버튼 스타일 (강조된 버튼)
   &.next {
-    background-color: #D2F07D; // Using the specific Lime color from design
-    color: #333333; // Dark text for contrast
+    background-color: #D2F07D; // 디자인된 라임 컬러
+    color: #333333; // 대비를 위한 다크 텍스트
     border: none;
-    min-width: 120px; // Ensure button has substance
+    min-width: 120px; 
     
     &:hover { 
       opacity: 0.9;
@@ -245,4 +289,44 @@ textarea.inputField {
   }
 }
 
-// .progressBar block removed
+// --- Progress Bar & Steps ---
+
+.progressBarContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background-color: rgba($col-titanium-silver, 0.15);
+  z-index: 10;
+}
+
+.progressBarFill {
+  height: 100%;
+  background-color: var(--accent-primary);
+  transform-origin: left;
+}
+
+.stepIndicator {
+  display: block;
+  font-family: $font-montserrat;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--accent-primary);
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  
+  .stepTotal {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.9em;
+    margin-left: 4px;
+    opacity: 0.7;
+  }
+}
+
+@include mobile {
+  .stepIndicator {
+    font-size: 0.8rem;
+  }
+}
