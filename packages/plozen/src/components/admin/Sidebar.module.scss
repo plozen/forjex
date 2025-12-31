@@ -1,0 +1,100 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  height: 100vh;
+  background-color: var(--admin-surface);
+  border-right: 1px solid var(--admin-border);
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(-100%);
+
+  @media (min-width: 1024px) {
+    transform: translateX(0);
+    position: static;
+  }
+
+  &.open {
+    transform: translateX(0);
+  }
+}
+
+/* Mobile Overlay logic usually handled in parent or global, 
+   but simplistic approach: create separate component or handle in layout. 
+   Sidebar will just be the sidebar itself. */
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  padding: 0 24px;
+  font-family: var(--font-montserrat);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--admin-text);
+  border-bottom: 1px solid var(--admin-border);
+
+  span {
+    color: var(--admin-accent);
+    margin-left: 4px;
+  }
+}
+
+.nav {
+  flex: 1;
+  padding: 24px 16px;
+  overflow-y: auto;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  color: var(--admin-text);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+
+  &:hover {
+    background-color: var(--admin-surface-hover);
+  }
+
+  &.active {
+    background-color: var(--admin-surface-hover);
+    color: var(--admin-accent);
+    font-weight: 600;
+  }
+}
+
+.icon {
+  margin-right: 12px;
+}
+
+.footer {
+  padding: 16px;
+  border-top: 1px solid var(--admin-border);
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  color: var(--admin-text);
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: var(--admin-surface-hover);
+    color: #ff4d4f;
+  }
+}

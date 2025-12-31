@@ -1,0 +1,21 @@
+:root {
+  --admin-bg: #FFFFFF;
+  --admin-surface: #FFFFFF;
+  --admin-text: #111111;
+  --admin-border: #E5E5E5;
+  --admin-accent: #a0dd09; /* Deep Lime */
+  
+  /* Additional needed based on context */
+  --admin-surface-hover: #F5F5F5;
+}
+
+[data-theme='dark'] {
+  --admin-bg: #111111;
+  --admin-surface: #1E1E1E;
+  --admin-text: #FFFFFF;
+  --admin-border: #333333;
+  --admin-accent: #D6FF00; /* Bio Lime */
+  
+  /* Additional needed based on context */
+  --admin-surface-hover: #2C2C2C;
+}
