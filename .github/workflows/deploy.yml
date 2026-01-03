@@ -64,6 +64,9 @@ jobs:
       id-token: write
 
     steps:
+      # -------------------------------------------------------------
+      # 1. 환경 설정 및 의존성 설치
+      # -------------------------------------------------------------
       - name: 저장소 코드 체크아웃
         uses: actions/checkout@v4
 
@@ -88,11 +91,6 @@ jobs:
       - name: 빌드 필수 패키지 설치
         run: sudo apt-get update && sudo apt-get install -y build-essential python3 python-is-python3
 
-      - name: Rust 툴체인 설치
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-
       - name: 기존 node_modules 디렉토리 정리
         run: |
           rm -rf node_modules
@@ -103,20 +101,14 @@ jobs:
           pnpm install --frozen-lockfile
           echo "✅ Dependencies installed successfully."
 
+      # -------------------------------------------------------------
+      # 2. 빌드 및 아티팩트 준비
+      # -------------------------------------------------------------
       - name: 최종 배포 결과물을 담을 'staging' 디렉토리 생성
         run: mkdir -p staging
 
       - name: 루트 index.html을 'staging'으로 복사
         run: cp index.html staging/
-
-      # -------------------------------------------------------------
-      # plozen 빌드 및 복사
-      # -------------------------------------------------------------
-      - name: plozen 패키지 빌드
-        run: |
-          echo "🚀 Building plozen..."
-          pnpm --filter plozen build
-          echo "✅ plozen build complete."
 
       - name: plolux 패키지 빌드
         run: |
