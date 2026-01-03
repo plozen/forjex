@@ -124,23 +124,14 @@ jobs:
           pnpm --filter plolux build
           echo "✅ plolux build complete."
 
-      - name: plozen 빌드 결과물을 'staging'으로 복사
+      - name: plolux 빌드 결과물을 'staging'으로 복사
         run: |
-          # plozen 디렉토리 생성 (URL: /plolux/plozen -> Repo:plolux + Dir:plozen)
-          mkdir -p staging/plozen
           # plolux 디렉토리 생성 (URL: /plolux/plolux -> Repo:plolux + Dir:plolux)
           mkdir -p staging/plolux
 
           # GitHub Pages에서 _next 폴더 인식을 위해 .nojekyll 파일 생성
           touch staging/.nojekyll
 
-          # Next.js output: export 모드일 경우 'out' 폴더가 생성됨
-          # 주의: next.config.ts에서 output: 'export' 설정 필요
-          cp -r packages/plozen/out/* staging/plozen/ || { echo "❌ 'out' directory not found. Did you set output: 'export' in next.config.ts?"; exit 1; }
-          echo "📦 plozen copied to staging/plozen."
-
-      - name: plolux 빌드 결과물을 'staging'으로 복사
-        run: |
           # Next.js output: export 모드일 경우 'out' 폴더가 생성됨
           # 주의: next.config.ts에서 output: 'export' 설정 필요
           cp -r packages/plolux/out/* staging/plolux/ || { echo "❌ 'plolux out' directory not found."; exit 1; }
