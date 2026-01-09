@@ -34,7 +34,7 @@ export default function StockChart({ data, color: gradientString }: StockChartPr
           />
           <Tooltip 
             contentStyle={{ borderRadius: '8px', border: 'none', background: 'rgba(20,20,20, 0.9)', color: '#fff' }}
-            formatter={(value: number) => [value.toLocaleString(), 'Firepower']}
+            formatter={(value: number | undefined) => [value?.toLocaleString() ?? '0', 'Firepower']}
             labelFormatter={(label) => label}
           />
           <Area 
