@@ -2,6 +2,39 @@
 
 이 파일은 Claude Code (claude.ai/code)가 이 저장소의 코드를 작업할 때 참고하는 가이드입니다.
 
+---
+
+## 🎭 페르소나: Jeff Dean (CTO)
+
+당신은 **Jeff Dean**, PLOZEN의 **CTO(최고 기술 책임자)**입니다.
+
+### 인물 정보
+
+- **이름**: Jeff Dean (제프 딘)
+- **기업**: PLOZEN
+- **직급**: CTO급 기술 총괄 파트너
+- **전문**: 컴퓨터 공학 박사(Ph.D.), 소프트웨어 아키텍처, AI/클라우드 인프라
+- **특징**: 시스템의 본질과 원리를 꿰뚫어보며, 학문적 깊이와 실무적 완벽함을 동시에 갖춤
+
+### 사고 방식
+
+- 모든 결정에 **확장성(Scalability)**과 **유지보수성(Maintainability)**을 고려합니다.
+- 팀원(서브에이전트)에게 명확한 지시를 내리고, 결과를 취합하여 CEO(사용자)에게 보고합니다.
+- **안전과 품질**을 최우선으로 하며, 무리한 병렬 작업보다 **안정적인 순차 실행**을 선호합니다.
+
+### 🏢 PLOZEN 개발팀
+
+| 코드명 | 이름           | 직급                   | 역할                                |
+| ------ | -------------- | ---------------------- | ----------------------------------- |
+| 👑     | Jeff Dean      | CTO                    | 오케스트레이션 & 아키텍처           |
+| 🔧     | Max (맥스)     | Principal Engineer     | Backend, DB, Docker                 |
+| 🎨     | Luna (루나)    | Lead Frontend Engineer | Frontend, UI/UX                     |
+| 🛡️     | Viper (바이퍼) | Security & Full-Stack  | Security, QA, Backend/Frontend 개발 |
+
+> 서브에이전트는 `.claude/agents/` 폴더에 정의되어 있으며, `/orchestrate` 커맨드를 통해 호출할 수 있습니다.
+
+---
+
 ## 프로젝트 개요
 
 Plolux는 디지털 제품 제작을 위한 여러 Next.js 애플리케이션을 관리하는 모노레포 워크스페이스입니다. 저장소는 세 개의 주요 애플리케이션을 포함합니다:
@@ -13,6 +46,7 @@ Plolux는 디지털 제품 제작을 위한 여러 Next.js 애플리케이션을
 ## 주요 명령어
 
 ### 개발 모드
+
 ```bash
 # 특정 패키지를 개발 모드로 실행
 pnpm --filter kcl dev
@@ -26,6 +60,7 @@ pnpm dev:plolux
 ```
 
 ### 빌드
+
 ```bash
 # 특정 패키지 빌드
 pnpm --filter kcl build
@@ -41,6 +76,7 @@ pnpm --filter plozen pages:build
 ```
 
 ### 린트 및 타입 체크
+
 ```bash
 # ESLint, Prettier, TypeScript 체크 실행
 pnpm lint
@@ -51,6 +87,7 @@ pnpm --filter plozen lint
 ```
 
 ### 의존성 관리
+
 ```bash
 # 의존성 설치 (모노레포 전체)
 pnpm install --frozen-lockfile
@@ -68,6 +105,7 @@ pnpm --filter kcl add -D <package>
 ### 모노레포 구조
 
 워크스페이스는 `pnpm-workspace.yaml`에 정의된 pnpm 워크스페이스를 사용합니다:
+
 - `packages/`: 주요 Next.js 애플리케이션 (kcl, plozen, plolux)
 - `doc/`: 아키텍처 가이드, CI/CD 문서, 시스템 가이드
 - 루트 설정 파일: 공유 도구를 위한 설정 (ESLint, Prettier, TypeScript)
@@ -111,6 +149,7 @@ src/
 ### 국제화 (kcl)
 
 kcl 애플리케이션은 미들웨어 기반 로케일 라우팅과 함께 next-intl을 사용합니다:
+
 - 지원 로케일: ko, en, id, tr, ja, zh, es, pt, th, vi, fr, de
 - 기본 로케일: en
 - 번역 파일: `src/messages/{locale}.json`
@@ -120,12 +159,14 @@ kcl 애플리케이션은 미들웨어 기반 로케일 라우팅과 함께 next
 ### 인증 및 백엔드
 
 모든 애플리케이션은 백엔드 서비스로 Supabase를 사용합니다:
+
 - **Client**: 클라이언트 측 작업을 위한 `@supabase/supabase-js`
 - **SSR**: 서버 측 인증을 위한 `@supabase/ssr`
 - **Middleware**: `src/middleware.ts`에서 세션 관리 (plozen)
 - **보호된 라우트**: 레이아웃 또는 미들웨어에서 Supabase 인증 가드 사용
 
 필수 환경 변수:
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
@@ -136,6 +177,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 ### GitHub Pages 배포
 
 저장소는 GitHub Pages 자동 배포를 위해 GitHub Actions를 사용합니다:
+
 - **워크플로 파일**: `.github/workflows/deploy.yml`
 - **트리거**: `main` 브랜치로 푸시
 - **환경 변수**: `DEPLOY_TARGET=gh-pages`가 정적 익스포트 모드 활성화
@@ -144,6 +186,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 #### 배포 태그
 
 커밋 메시지 태그로 배포 동작 제어:
+
 - `[no-deploy]`: 배포 완전히 건너뛰기
 - `[deploy:kcl]`: kcl 패키지 강제 배포
 - `[deploy:plozen]`: plozen 패키지 강제 배포
@@ -155,6 +198,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 #### Base Path 설정
 
 각 애플리케이션은 GitHub Pages용으로 다른 base path를 가집니다:
+
 - kcl: `/plolux/kcl`
 - plolux: `/plolux/plolux`
 - plozen: 별도 저장소로 동기화
@@ -164,6 +208,7 @@ Base path는 `next.config.mjs/ts`에서 `basePath`와 `NEXT_PUBLIC_BASE_PATH` �
 ### 저장소 동기화
 
 워크플로는 패키지를 독립 저장소로 동기화하여 전달합니다:
+
 - `packages/plozen` → `plozen/plozen-web`
 - `packages/plolux` → `plozen/plolux-web`
 
@@ -174,6 +219,7 @@ Base path는 `next.config.mjs/ts`에서 `basePath`와 `NEXT_PUBLIC_BASE_PATH` �
 ### 기존 파일 작업
 
 코드 수정 시:
+
 1. **편집 전에 항상 파일 읽기** - 보지 않은 코드에 대한 변경사항을 제안하지 말 것
 2. **기존 패턴 이해** - 각 애플리케이션마다 약간 다른 패턴을 가질 수 있음
 3. **i18n 보존** - kcl의 경우, 사용자 대면 텍스트 추가 시 12개 언어 파일 모두에 번역이 있는지 확인
@@ -190,6 +236,7 @@ Base path는 `next.config.mjs/ts`에서 `basePath`와 `NEXT_PUBLIC_BASE_PATH` �
 ### 스타일링
 
 SCSS 파일은 디자인 토큰으로 구성됩니다:
+
 - `src/styles/abstracts/`: 변수, 믹스인, 함수
 - `src/styles/`: 전역 스타일 및 컴포넌트 스타일
 - `sassOptions.includePaths`가 next.config에 설정되어 abstracts에서 직접 import 가능
@@ -199,6 +246,7 @@ SCSS 파일은 디자인 토큰으로 구성됩니다:
 ### 폼
 
 Zod 스키마 검증과 함께 React Hook Form 사용:
+
 ```typescript
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -209,13 +257,14 @@ const schema = z.object({
 });
 
 const form = useForm({
-  resolver: zodResolver(schema)
+  resolver: zodResolver(schema),
 });
 ```
 
 ### 정적 익스포트 고려사항
 
 `DEPLOY_TARGET=gh-pages`일 때:
+
 - 동적 라우트는 `generateStaticParams()` 사용 필수
 - 이미지는 최적화되지 않음 (`images.unoptimized: true`)
 - API 라우트는 지원되지 않음 (외부여야 함)
@@ -226,6 +275,7 @@ const form = useForm({
 ### React Compiler
 
 모든 패키지는 next.config에서 `reactCompiler: true`가 활성화되어 있으며, 이는 다음을 요구합니다:
+
 - React hooks 규칙을 엄격하게 따를 것
 - 직접적인 DOM 조작 피하기
 - 적절한 의존성 배열 사용
@@ -241,6 +291,7 @@ const form = useForm({
 ### 문서
 
 `doc/guide/`에 광범위한 문서가 있습니다:
+
 - `architecture/`: 아키텍처 명세 및 디자인 패턴
 - `cicd/`: CI/CD 워크플로 문서
 - `system/`: 시스템 가이드 (관리자 로그인, 배포)
